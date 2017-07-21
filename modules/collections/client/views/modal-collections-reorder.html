@@ -1,0 +1,19 @@
+<div class="collection-modal">
+  <div class="modal-header">
+    <button class="btn btn-default close" ng-click="vmm.cancel()"><span aria-hidden="true">×</span></button>
+    <h3 class="modal-title">Reorder Other Documents</h3>
+    <p>Drag and drop to reorder documents</p>
+  </div>
+  <div class="modal-body">
+    <div class="button-bar">
+      <button class="btn btn-default" ng-click="vmm.cancel();">Cancel</button>
+      <button class="btn btn-primary" ng-click="vmm.ok();">OK</button>
+    </div>
+    <x-reorder-collection-content x-list="vmm.list"></x-reorder-collection-content>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-default" ng-click="vmm.cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="vmm.ok()">OK</button>
+  </div>
+</div>

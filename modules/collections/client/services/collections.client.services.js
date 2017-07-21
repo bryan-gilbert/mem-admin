@@ -35,6 +35,10 @@ angular.module('collections').factory('CollectionModel', function (ModelBase, _)
         unpublishCollection: function(collectionId) {
           return this.put('/api/collections/' + collectionId + '/unpublish', {});
         },
+
+        sortOtherDocuments: function(collectionId, idList) {
+          return this.put('/api/collections/' + collectionId + '/sort', idList);
+        }
     });
     return new Class ();
 });
