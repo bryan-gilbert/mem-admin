@@ -177,6 +177,46 @@ module.exports = DBModel.extend({
 		});
 	},
 
+	sortOtherDocuments: function(collectionId, idList) {
+		var self = this;
+
+		return this.findById(collectionId).then(function(collection) {
+			if (!collection) throw new Error('Missing collection');
+			if (!idList || ! Array.isArray(idList) || idList.length === 0)  throw new Error('Missing id list');
+			if (!collection.otherDocuments || ! Array.isArray(collection.otherDocuments) || collection.otherDocuments.length === 0)  throw new Error('Missing other documents in collection');
+
+			// shallow copy array
+			var toSortList = collection.otherDocuments.slice();
+			var item, index = 0;
+
+			idList.forEach(function( id ) {
+				var foundIndex = toSortList.findIndex(function(item) {
+					return item._id.toString() === id;
+				});
+				if ( foundIndex > -1 ) {
+					item = toSortList[foundIndex];
+					// update the item in the collection.otherDocuments
+					item.sortOrder = index++;
+					// remove the found item from the temporary list
+					toSortList.splice( foundIndex, 1);
+				}
+			});
+			if (toSortList.length > 0 ) {
+				/*
+					Handle items not in the passed in list of ids.  E.g. Two users working on collection.
+					One is sorting the other is adding or removing documents. Both start from the same list but the second
+					user submits the new document list before the first user finishes sorting.  We make sure the newly added
+					documents are at the bottom of the new list.
+				 */
+				toSortList.forEach(function(item) {
+					item.sortOrder = index++;
+				});
+			}
+			collection.save();
+			return collection.otherDocuments;
+		});
+	},
+
 	removeOtherDocument: function(collectionId, documentId) {
 		var self = this;
 

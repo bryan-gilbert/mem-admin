@@ -54,6 +54,20 @@ module.exports = function(app) {
 			return model.unpublish(req.params.collectionId);
 		}));
 
+	// Unpublish a collection
+	app.route('/api/collections/:collectionId/sort')
+	.all(policy('user'))
+	.put(routes.setAndRun(CollectionClass, function(model, req) {
+		return model.sortOtherDocuments(req.params.collectionId, req.body);
+	}));
+
+	// Add a sorted document to a collection
+	app.route('/api/collections/:collectionId/document/:documentId/add/:sortOrder')
+		.all(policy('user'))
+		.put(routes.setAndRun(CollectionClass, function(model, req) {
+			return model.addOtherDocument(req.params.collectionId, req.params.documentId, req.params.sortOrder);
+		}));
+
 	// Add a document to a collection
 	app.route('/api/collections/:collectionId/document/:documentId/add')
 		.all(policy('user'))

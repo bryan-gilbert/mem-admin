@@ -1,48 +1,23 @@
-<div class="collection-list-container">
-  <section >
+<div class="dnd-drag-target-top" dnd-scroll-area dnd-region="top" dnd-scroll-container="collectionList"></div>
 
-    <div ng-if="vm.publicView">
-      <div  class="collection-list">
-        <ul>
-          <li class="collection-row"
-              ng-repeat="item in vm.collection.items">
+<div class="dnd-scroll-container" id="collectionList">
+    <ul dnd-list dnd-drop="vm.onDrop(item, index)">
+        <li class="dnd-row" ng-repeat="item in vm.list" id="{{'dc0-' + item.document._id}}" ng-class="{'selected': item.selected}"
+            dnd-draggable="vm.getSelectedItemsIncluding(item)" 
+            dnd-dragstart="vm.onDragstart( event, 'dc0-')" 
+            dnd-moved="vm.onMoved()"
+            dnd-dragend="vm.onDragend(event)" 
+            dnd-selected="item.selected = !item.selected" 
+            ng-hide="vm.dragging && item.selected">
             <div class="collection-document">
-              <div class="name">{{ item.document.displayName }}</div>
-              <div class="date">{{ item.document.documentDate | date: 'y-MM-dd' }}</div>
-              <div class="status">
-                <span class="label label-default" ng-class="{'label-success' : item.document.isPublished }">{{ item.document.isPublished ? 'PUBLISHED' : 'UNPUBLISHED' }}</span>
-              </div>
+                <div class="name">{{ item.document.displayName }}</div>
+                <div class="date">{{ item.document.documentDate | date: 'y-MM-dd' }}</div>
+                <div class="status">
+                    <span class="label label-default" ng-class="{'label-success' : item.document.isPublished }">{{ item.document.isPublished ? 'PUBLISHED' : 'UNPUBLISHED' }}</span>
+                </div>
             </div>
-
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div ng-if="!vm.publicView">
-      <div class="dnd-scroll-area dnd-scroll-area-top" dnd-scroll-area dnd-region="top" dnd-scroll-container="collectionList"></div>
-      <div id="collectionList" class="collection-list collection-list-edit">
-        <ul dnd-list dnd-drop="vm.onDrop(vm.collection, item, index)">
-          <li class="collection-row  dnd-move-row"
-              ng-repeat="item in vm.collection.items"
-              id="{{'dc0-' + item.document._id}}"
-              ng-class="{'selected': item.selected}"
-              dnd-draggable="vm.getSelectedItemsIncluding(vm.collection, item)"
-              dnd-dragstart="vm.onDragstart(vm.collection, event, 'dc0-')"
-              dnd-moved="vm.onMoved(vm.collection)"
-              dnd-dragend="vm.onDragend(vm.collection, event)"
-              dnd-selected="item.selected = !item.selected"
-              ng-hide="list.dragging && item.selected">
-            <div class="collection-document">
-              <div class="name">{{ item.document.displayName }}</div>
-              <div class="date">{{ item.document.documentDate | date: 'y-MM-dd' }}</div>
-              <div class="status">
-                <span class="label label-default" ng-class="{'label-success' : item.document.isPublished }">{{ item.document.isPublished ? 'PUBLISHED' : 'UNPUBLISHED' }}</span>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="dnd-scroll-area dnd-scroll-area-bottom" dnd-scroll-area dnd-region="bottom" dnd-scroll-container="collectionList"></div>
-    </div>
-  </section>
+        </li>
+    </ul>
 </div>
+
+<div class="dnd-drag-target-bottom" dnd-scroll-area dnd-region="bottom" dnd-scroll-container="collectionList"></div>

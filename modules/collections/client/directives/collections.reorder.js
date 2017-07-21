@@ -1,7 +1,7 @@
 "use strict";
 angular.module('control')
 // x-reorder-collection-modal attribute of a button
-.directive("reorderCollectionModal",['$modal',  reorderCollectionModal])
+.directive("reorderCollectionModal",['$modal', '_', 'CollectionModel', 'AlertService', reorderCollectionModal])
 // x-reorder-collection-content element in the modal
 .directive('reorderCollectionContent', [reorderCollectionContent ])
 // dnd-scroll-area a region above and below the reordering list that helps scrolling the list
@@ -9,11 +9,12 @@ angular.module('control')
 .controller("collectionsSortingController", collectionsSortingController)
 ;
 
-function reorderCollectionModal($modal, _) {
+function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 	return {
 		restrict: 'A',
 		scope: {
-			collection: '='
+			collection: '=',
+			onSave: '='
 		},
 		link: function (scope, element, attributes) {
 			element.on('click', function () {
@@ -22,24 +23,56 @@ function reorderCollectionModal($modal, _) {
 					templateUrl: 'modules/collections/client/views/modal-collections-reorder.html',
 					controllerAs: 'vmm',
 					size: 'lg',
+					windowClass: 'fs-modal',
 					controller: function ($modalInstance) {
 						var vmm = this;
-						vmm.items = scope.collection.otherDocuments;
+						vmm.busy = false;
 						vmm.ok = submit;
 						vmm.cancel = cancel;
+						vmm.collection = scope.collection;
+						//deep'ish copy of original list of documents. We can sort this clone without affecting the original
+						vmm.list = JSON.parse(JSON.stringify(vmm.collection.otherDocuments));
+						// sort the list by sort order
+						vmm.list.sort(function (doc1, doc2) {
+							return doc1.sortOrder - doc2.sortOrder;
+						});
 
 						function cancel () {
 							$modalInstance.dismiss('cancel');
 						}
 						function submit () {
-							$modalInstance.close();
+							vmm.busy = true;
+							var list = vmm.list;
+							var ids = [];
+							list.forEach(function(item) {
+								ids.push(item._id);
+							});
+							CollectionModel.sortOtherDocuments(vmm.collection._id, ids)
+							.then(function(sortedDocs) {
+								AlertService.success('"'+ vmm.collection.displayName +'"' + ' was reordered successfully.');
+								if (sortedDocs) {
+									vmm.collection.otherDocuments = sortedDocs;
+								}
+								$modalInstance.close(sortedDocs);
+							})
+							.catch(function(res) {
+								console.log("Error:", res);
+								var failure = _.has(res, 'message') ? res.message : undefined;
+								AlertService.error('"'+ vmm.collection.displayName +'"' + ' was not reordered');
+								$modalInstance.close();
+							});
 						}
 					}
-				}).result.then(function () {
-					console.log("this is where we set the new order");
+				}).result
+				.then (function() {
+					if (scope.onSave) {
+						scope.onSave();
+					}
 				})
 				.catch(function (err) {
-					console.log("Error in reorderCollectionModal", err);
+					if ('cancel' !== err && 'backdrop click' !== err) {
+						console.log("Error in reorderCollectionModal", err);
+					}
 				});
 			});
 		}
@@ -53,7 +86,7 @@ function reorderCollectionContent() {
 		controller: 'collectionsSortingController',
 		controllerAs: 'vm',
 		scope: {
-			items: '='
+			list: '='
 		}
 	};
 	return directive;
@@ -64,75 +97,29 @@ collectionsSortingController.$inject = ['$scope', '$document', '$timeout'];
 /* @ngInject */
 function collectionsSortingController($scope, $document, $timeout) {
 	var vm = this;
-	vm.items = $scope.items;
-	vm.collection = {
-		items: vm.items,
-		dragging: false
-	};
+	vm.dragging = false;
+	vm.list = $scope.list;
 	vm.getSelectedItemsIncluding = getSelectedItemsIncluding;
 	vm.onDragstart = onDragstart;
 	vm.onDragend = onDragend;
 	vm.onDrop = onDrop;
 	vm.onMoved = onMoved;
-	vm.sortBy = sortBy;
 	vm.sorting = {ascending: true, column: ''};
 
-	// vm.sortBy('name');
-
-	vm.items.forEach(function(item) {
-		console.log("item ", item._id, item.document.displayName, item.sortOrder);
+	vm.list.forEach(function(item) {
+		item.selected = false;
 	});
 
-	function sortBy(column) {
-		if (vm.sorting.column === column.toLowerCase()) {
-			//so we reverse the order...
-			vm.sorting.ascending = !vm.sorting.ascending;
-		} else {
-			// changing column, set to ascending...
-			vm.sorting.column = column.toLowerCase();
-			vm.sorting.ascending = true;
-		}
-		var direction = vm.sorting.ascending ? 1 : -1;
-		var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-		var list = vm.collection.items;
-
-		if (vm.sorting.column === 'name') {
-			vm.collection.items.sort(function (d1, d2) {
-				var v = collator.compare(d1.document.displayName, d2.document.displayName);
-				return v * direction;
-			});
-		} else if (vm.sorting.column === 'date') {
-			list.sort(function (doc1, doc2) {
-				var d1 = doc1.document.documentDate || 0;
-				var d2 = doc2.document.documentDate || 0;
-				return (new Date(d1) - new Date(d2)) * direction;
-			});
-		} else if (vm.sorting.column === 'status') {
-			list.sort(function (doc1, doc2) {
-				var d1 = doc1.document.isPublished ? 1 : 0;
-				var d2 = doc2.document.isPublished ? 1 : 0;
-				return (d1 - d2) * direction;
-			});
-		}
-		else if (vm.sorting.column === 'random') {
-			list.sort(function (doc1, doc2) {
-				var d1 = Math.random();
-				var d2 = Math.random();
-				return (d1 - d2) * direction;
-			});
-		}
-	}
-
-	function getSelectedItemsIncluding(list, item) {
+	function getSelectedItemsIncluding(item) {
 		item.selected = true;
-		return list.items.filter(function(item) {
+		return vm.list.filter(function(item) {
 			return item.selected;
 		});
 	}
 
-	function onDragstart(list, event, idPrefix) {
-		list.dragging = true;
-		var selected = list.items.filter(function(item) {
+	function onDragstart(event, idPrefix) {
+		vm.dragging = true;
+		var selected = vm.list.filter(function(item) {
 			return item.selected;
 		});
 		$timeout(function() {
@@ -144,27 +131,29 @@ function collectionsSortingController($scope, $document, $timeout) {
 		}, 0);
 	}
 
-	function onDragend(list, event) {
-		list.dragging = false;
+	function onDragend() {
+		vm.dragging = false;
 	}
 
-	function onDrop(list, items, index) {
+	function onDrop(items, index) {
 		angular.forEach(items, function(item) {
 			item.selected = false;
 		});
-		list.items = list.items.slice(0, index)
+		vm.list = vm.list.slice(0, index)
 		.concat(items)
-		.concat(list.items.slice(index));
-		list.items.forEach(function(item,index) {
+		.concat(vm.list.slice(index));
+		vm.list.forEach(function(item,index) {
 			item.sortOrder = index;
 		});
 		return true;
 	}
 
-	function onMoved(list) {
-		list.items = list.items.filter(function(item) {
+	function onMoved() {
+		// remove the items that were just dragged (they are still selected)
+		vm.list = vm.list.filter(function(item) {
 			return !item.selected;
 		});
+		$scope.list = vm.list;
 	}
 }
 
