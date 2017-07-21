@@ -22,7 +22,8 @@ var ApplicationConfiguration = (function () {
     'duScroll',
     'ngPDFViewer',
     'ngCookies',
-    'ngclipboard'
+    'ngclipboard',
+    'dndLists'
   ];
 
 

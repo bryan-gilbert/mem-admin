@@ -96,6 +96,12 @@
                             x-target-name="collection.displayName"
                             x-on-ok="updateOtherDocuments"><span class="glyphicon glyphicon-link"></span><span>Link Other Documents</span>
                         </button>
+                        <button class="btn btn-default btn-sm"
+                                title="Reorder"
+                                x-reorder-collection-modal x-collection="collection" x-on-save="asdasd">
+                            <span class="glyphicon glyphicon-sort"></span>
+                            <span>Reorder</span>
+                        </button>
                     </div>
                     <div class="table-container">
                         <table class="table" ng-table="otherTableParams">
