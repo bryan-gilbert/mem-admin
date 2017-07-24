@@ -79,6 +79,10 @@ function collectionsSortingController($scope, $document, $timeout) {
 
 	// vm.sortBy('name');
 
+	vm.items.forEach(function(item) {
+		console.log("item ", item._id, item.document.displayName, item.sortOrder);
+	});
+
 	function sortBy(column) {
 		if (vm.sorting.column === column.toLowerCase()) {
 			//so we reverse the order...
