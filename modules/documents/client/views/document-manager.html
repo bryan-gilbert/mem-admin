@@ -515,11 +515,11 @@
 									<span class="name">ID:</span>
 									<span class="value">{{ documentMgr.infoPanel.data.documentId }}</span>
 								</li>
-                <li class="doc-keywords-list" ng-if="documentMgr.infoPanel.data.keywords.length > 0">
-                  <span class="name">Keyword(s):</span>
-                  <ul>
-                    <li data-ng-repeat="keyword in documentMgr.infoPanel.data.keywords">{{ keyword }}</li>
-                  </ul>
+								<li class="doc-keywords-list" ng-if="documentMgr.infoPanel.data.keywords.length > 0">
+									<span class="name">Keyword(s):</span>
+									<ul class="value">
+										<li data-ng-repeat="keyword in documentMgr.infoPanel.data.keywords">{{ keyword }}</li>
+									</ul>
 								</li>
 								<li ng-if="project.userCan.listProjectCollections && documentMgr.infoPanel.data.collections.length > 0">
 									<span class="name">Collection(s):</span>
@@ -594,11 +594,11 @@
 									<span class="name">Inspection Report Date:</span>
 									<span class="value">{{ documentMgr.infoPanel.data.inspectionReport.dateReportIssued | date : "yyyy-MM-dd"}}</span>
 								</li>
-								<li ng-if="documentMgr.infoPanel.data.inspectionType === 'Inspection Report Response' && documentMgr.infoPanel.data.inspectionReport.dateReportIssued">
+								<li ng-if="documentMgr.infoPanel.data.inspectionType.indexOf('Inspection Report Response') > -1 && documentMgr.infoPanel.data.inspectionReport.dateResponse">
 									<span class="name">Inspection Report Response Date:</span>
 									<span class="value">{{ documentMgr.infoPanel.data.inspectionReport.dateResponse | date : "yyyy-MM-dd"}}</span>
 								</li>
-								<li ng-if="documentMgr.infoPanel.data.inspectionType === 'Inspection Report Follow Up' && documentMgr.infoPanel.data.inspectionReport.dateFollowUp">
+								<li ng-if="documentMgr.infoPanel.data.inspectionType.indexOf('Inspection Report Follow Up') > -1 && documentMgr.infoPanel.data.inspectionReport.dateFollowUp">
 									<span class="name">Follow Up Date:</span>
 									<span class="value">{{ documentMgr.infoPanel.data.inspectionReport.dateFollowUp | date : "yyyy-MM-dd"}}</span>
 								</li>

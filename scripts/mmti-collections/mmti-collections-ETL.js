@@ -35,13 +35,13 @@ var api = function(url, type, name, body) {
 			var description = type + ' "' + name + '"';
 			if (err) {
 				console.log(': Error adding ' + description + err);
-				reject();
+				resolve();
 			} else if (res.statusCode != 200) {
-				console.log(': ' + res.statusCode + ' ' + body);
-				reject();
+				console.log(': ' + res.statusCode + ' while adding ' + description);
+				resolve();
 			} else if (!body) {
 				console.log(': Failed to add ' + description);
-				reject();
+				resolve();
 			} else {
 				console.log(': Successfully added ' + description);
 				resolve(body);
@@ -71,25 +71,29 @@ var add = function(projectCode, collection, followUpDocuments) {
 	var collectionId = null;
 
 	return addCollection(collection, projectCode).then(function(newCollection) {
-		collectionId = newCollection._id;
-		if (mainDocument) {
+		if (newCollection) collectionId = newCollection._id;
+		var others = [];
+		if (mainDocument && collectionId) {
 			// find the actual document ID
 			var matches = mainDocument.ref.match('api/document/(.+)/fetch$');
 			if (matches) {
 				console.log('Adding main document "' + mainDocument.name + '" to collection "' + collection.displayName + '"');
-				return addMainDocument(matches[1], collectionId);
+				others.push(addMainDocument(matches[1], collectionId));
 			}
 		}
+		return Promise.all(others);
 	}).then(function() {
 		var others = [];
-		_.each(otherDocuments, function(otherDocument) {
-			// find the actual document ID
-			var matches = otherDocument.ref.match('api/document/(.+)/fetch$');
-			if (matches) {
-				console.log('Adding other document "' + otherDocument.name + '" to collection "' + collection.displayName + '"');
-				others.push(addOtherDocument(matches[1], collectionId));
-			}
-		});
+		if (collectionId) {
+			_.each(otherDocuments, function(otherDocument) {
+				// find the actual document ID
+				var matches = otherDocument.ref.match('api/document/(.+)/fetch$');
+				if (matches) {
+					console.log('Adding other document "' + otherDocument.name + '" to collection "' + collection.displayName + '"');
+					others.push(addOtherDocument(matches[1], collectionId));
+				}
+			});
+		}
 		return Promise.all(others);
 	});
 }

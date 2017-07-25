@@ -90,6 +90,7 @@ a.icon-btn {
 
     span.value {
         @include flex(1 1 auto);
+        word-break: break-all;
     }
 
     ul.value {
