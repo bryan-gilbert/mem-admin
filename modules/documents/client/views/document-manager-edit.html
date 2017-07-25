@@ -44,8 +44,8 @@
 		</div>
 
 		<div ng-if="doc._schemaName === 'Document'" class="form-group">
-			<label class="control-label" for="documentCategories">Document Category/ies</label>
-			<button class="btn btn-default btn-sm" id="documentCategories" x-categories-modal x-doc="doc" ng-blur="validate()">Set Category/ies</button>
+			<label class="control-label" for="documentCategories">{{ doc.documentCategories | filterPluralText : [ 'Category', 'Category', 'Categories' ] }}</label>
+			<button class="btn btn-default btn-sm" type="button" id="documentCategories" x-categories-modal x-doc="doc" ng-blur="validate()">Set Category(ies)</button>
 			<span class="value document-categories-list">
 				<ul>
 					<li data-ng-repeat="category in doc.documentCategories">{{category}}</li>
@@ -60,10 +60,10 @@
 					<ul class="tag-list">
 						<li class="tag" ng-repeat="keyword in doc.keywords">
 							<span class="tag-name">{{keyword}}</span>
-							<button class="btn btn-sm" ng-click="removeKeyword(keyword)"><span class="glyphicon glyphicon-remove"></span></button>
+							<button class="btn btn-sm" type="button"  ng-click="removeKeyword(keyword)"><span class="glyphicon glyphicon-remove"></span></button>
 						</li>
 						<li class="add-tag">
-							<button class="add-btn btn btn-sm"
+							<button class="add-btn btn btn-sm"  type="button"
 											x-document-mgr-add-keyword
 											x-project="project"
 											x-doc="doc">
@@ -102,7 +102,7 @@
 			</div>
 
 			<div class="form-group" x-show-errors>
-				<label for="associatedAuthorization" class="control-label">Associated Authorization</label>
+				<label for="associatedAuthorization" class="control-label">Associated Authorization(s)</label>
 				<input class="form-control" id="associatedAuthorization" name="associatedAuthorization" type="text" ng-model="doc.inspectionReport.associatedAuthorization" ng-blur="validate()">
 			</div>
 
@@ -117,7 +117,7 @@
 									 datepicker-options="dateOptions"
 									 close-text="Close"
 									 disabled/>
-						<button class="btn btn-default calendar-btn" ng-click="dateReportIssuedPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
+						<button class="btn btn-default calendar-btn"  type="button" ng-click="dateReportIssuedPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
 					</div>
 				</div>
 			</div>
@@ -132,7 +132,7 @@
 									 datepicker-options="dateOptions"
 									 close-text="Close"
 									 disabled/>
-						<button class="btn btn-default calendar-btn" ng-click="dateResponsePicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
+						<button class="btn btn-default calendar-btn"  type="button" ng-click="dateResponsePicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
 					</div>
 				</div>
 			</div>
@@ -147,7 +147,7 @@
 									 datepicker-options="dateOptions"
 									 close-text="Close"
 									 disabled/>
-						<button class="btn btn-default calendar-btn" ng-click="dateFollowUpPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
+						<button class="btn btn-default calendar-btn"  type="button" ng-click="dateFollowUpPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
 					</div>
 				</div>
 			</div>
@@ -168,7 +168,7 @@
 						disabled
 						required
 						ng-change="validate()"/>
-					<button class="btn btn-default calendar-btn" ng-click="datePicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
+					<button class="btn btn-default calendar-btn"  type="button" ng-click="datePicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
 				</div>
 			</div>
 			<div class="day-display-input">
@@ -189,7 +189,7 @@
 						   close-text="Close"
 						   disabled
 						   ng-change="validate()"/>
-					<button class="btn btn-default calendar-btn" ng-click="dateUploadedPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
+					<button class="btn btn-default calendar-btn"  type="button" ng-click="dateUploadedPicker.opened = true;"><span class="glyphicon glyphicon-calendar"/></button>
 				</div>
 			</div>
 		</div>
@@ -197,7 +197,7 @@
 	</div>
 
 	<div class="modal-footer clearfix">
-		<button class="btn btn-default" ng-disabled="editFileProperties.busy" ng-click="editFileProperties.cancel()">Cancel</button>
-		<button class="btn btn-primary" ng-disabled="!editFileForm.$valid || editFileProperties.busy" ng-click="editFileProperties.save(editFileForm.$valid)">Save</button>
+		<button class="btn btn-default" type="button" ng-disabled="editFileProperties.busy" ng-click="editFileProperties.cancel()">Cancel</button>
+		<button class="btn btn-primary" type="button" ng-disabled="!editFileForm.$valid || editFileProperties.busy" ng-click="editFileProperties.save(editFileForm.$valid)">Save</button>
 	</div>
 </form>

@@ -59,9 +59,9 @@ angular.module('documents')
 					$scope.$apply();
 				});
 
-				// default sort is by name ascending...
+				// default sort is by date ascending...
 				self.sorting = {
-					column: 'name',
+					column: 'date',
 					ascending: true
 				};
 
