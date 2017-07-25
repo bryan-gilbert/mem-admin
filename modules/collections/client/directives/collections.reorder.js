@@ -23,6 +23,7 @@ function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 					templateUrl: 'modules/collections/client/views/modal-collections-reorder.html',
 					controllerAs: 'vmm',
 					size: 'lg',
+					windowClass: 'fs-modal',
 					controller: function ($modalInstance) {
 						var vmm = this;
 						vmm.busy = false;
