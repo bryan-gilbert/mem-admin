@@ -69,7 +69,7 @@ function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 					}
 				})
 				.catch(function (err) {
-					if ('cancel' !== err) {
+					if ('cancel' !== err && 'backdrop click' !== err) {
 						console.log("Error in reorderCollectionModal", err);
 					}
 				});
