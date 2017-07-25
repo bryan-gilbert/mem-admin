@@ -6,4 +6,11 @@ db.documents.updateMany({documentAuthor :{ $ne : null }},{ $unset: { documentAut
 db.documents.updateMany({documentAuthor :{ $eq : "" } },{ $unset: { documentAuthor: ""}})
 
 Run this to be sure everything is clear:
-db.documents.find({documentAuthor :{ $ne : null }},{documentAuthor:1})
+db.documents.find({$and : [ { documentAuthor : {$ne : ""} },{ documentAuthor : {$ne : null}}]},{documentAuthor:1})
+db.documents.find({documentAuthor :{ $ne : "" }},{documentAuthor:1})
+
+To make a copy of the relevant parts of the documents collection for testing run this
+db.documents.aggregate( [ { $project: {displayName:1, documentAuthor:1, processed: { $literal: false }}},{ $out: "docs" } ])
+
+To perform the update on Mongo 2.6.9
+db.docs.update( {$and : [ { documentAuthor : {$ne : ""} },{ documentAuthor : {$ne : null}}]}, { $unset: { documentAuthor: ""}}, {multi: true })
