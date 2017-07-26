@@ -183,17 +183,17 @@ function inspectionType() {
 	var categories = this.documentCategories || [];
 	// see copy of this same code on client: doc-categories.js
 	var inspectionReportTypes = ['Inspection Report Response', 'Inspection Report Follow Up', 'Inspection Report'];
-	var inspectionType = null;
-	for(var i = 0; i < categories.length && !inspectionType; i++) {
+	var iType = null;
+	for(var i = 0; i < categories.length && !iType; i++) {
 		var cat = categories[i];
-		for (var k=0; k < inspectionReportTypes.length && !inspectionType; k++) {
+		for (var k=0; k < inspectionReportTypes.length && !iType; k++) {
 			var type = inspectionReportTypes[k];
 			if (_.startsWith(cat,type)) {
-				inspectionType = type;
+				iType = type;
 			}
 		}
 	}
-	return inspectionType;
+	return iType;
 }
 
 
