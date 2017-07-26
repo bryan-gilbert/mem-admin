@@ -2,7 +2,7 @@
 angular
 .module('documents')
 .factory('CategoriesFactory', ['TreeModel', '_', CategoriesFactory ])
-.controller('categorySelectModalController', categorySelectModalControllerImpl )
+.controller('categorySelectModalController', ['$scope', '$modalInstance', '_', categorySelectModalControllerImpl ])
 .controller('categorySelectController', ['CategoriesFactory', '_', '$scope', categorySelectControllerImpl ])
 .directive('categoriesModal', ['$modal', categoriesDirective ]) // x-categories-modal
 .directive('categoriesSelector', ['$modal', categoriesSelectorDirective ]); // x-categories-selector
@@ -34,7 +34,7 @@ function categoriesDirective($modal) {
 
 
 // controller for the modal dialog
-function categorySelectModalControllerImpl($scope, $modalInstance) {
+function categorySelectModalControllerImpl($scope, $modalInstance, _) {
 	var self = this;
 	self.cancel = cancel;
 	self.ok = submit;
@@ -47,12 +47,17 @@ function categorySelectModalControllerImpl($scope, $modalInstance) {
 	}
 	function submit() {
 		var categories = self.categories;
+		// see copy of the following in server document.model.js
+		// types with longest length first
+		var inspectionReportTypes = ['Inspection Report Response', 'Inspection Report Follow Up', 'Inspection Report'];
 		var inspectionType = null;
-		for(var i = 0; i < categories.length; i++) {
+		for(var i = 0; i < categories.length && !inspectionType; i++) {
 			var cat = categories[i];
-			if (cat.indexOf("Inspection ") >= 0) {
-				inspectionType = cat;
-				break;
+			for (var k=0; k < inspectionReportTypes.length && !inspectionType; k++) {
+				var type = inspectionReportTypes[k];
+				if (_.startsWith(cat,type)) {
+					inspectionType = type;
+				}
 			}
 		}
 		self.doc.documentCategories = categories;
