@@ -23,6 +23,8 @@ function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 					templateUrl: 'modules/collections/client/views/modal-collections-reorder.html',
 					controllerAs: 'vmm',
 					size: 'lg',
+                    backdrop  : 'static',
+                    keyboard  : false,
 					windowClass: 'fs-modal',
 					controller: function ($modalInstance) {
 						var vmm = this;
@@ -48,12 +50,9 @@ function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 								ids.push(item._id);
 							});
 							CollectionModel.sortOtherDocuments(vmm.collection._id, ids)
-							.then(function(sortedDocs) {
+							.then(function() {
 								AlertService.success('"'+ vmm.collection.displayName +'"' + ' was reordered successfully.');
-								if (sortedDocs) {
-									vmm.collection.otherDocuments = sortedDocs;
-								}
-								$modalInstance.close(sortedDocs);
+								$modalInstance.close();
 							})
 							.catch(function(res) {
 								console.log("Error:", res);
