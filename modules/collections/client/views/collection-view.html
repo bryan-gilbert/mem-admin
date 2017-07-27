@@ -106,7 +106,7 @@
                     <div class="table-container">
                         <table class="table" ng-table="otherTableParams">
                             <tr ng-repeat="d in $data" ng-click="goToDocument(d.document)">
-                                <td data-title="'Sort'" ng-show="false" title='Sort' sortable="'Sort'">{{ d.document.sortOrder}}</td>
+                                <!--<td data-title="'Sort'" ng-show="false" title='Sort' sortable="'Sort'">{{ d.document.sortOrder}}</td>-->
                                 <td data-title="'Name'" title='Name' sortable="'Name'">{{ d.document.displayName | removeExtension }}</td>
                                 <td data-title="'Date'" title='Date' sortable="'Date'">{{ d.document.documentDate | amDateFormat:'MMMM DD, YYYY' }}</td>
                                 <td data-title="'Uploaded'" title='Uploaded' sortable="'Uploaded'">{{ d.document.dateUploaded | amDateFormat:'MMMM DD, YYYY' }}</td>
@@ -117,7 +117,7 @@
                                 </td>
                             </tr>
                             <tr class="no-results" ng-if="!$data || $data.length === 0">
-                                <td colspan="5">No documents found.</td>
+                                <td colspan="4">No documents found.</td>
                             </tr>
                         </table>
                     </div>
