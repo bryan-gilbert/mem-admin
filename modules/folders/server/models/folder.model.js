@@ -18,6 +18,8 @@ module.exports = require (path.resolve('./modules/core/server/controllers/core.s
 	dateAdded 	: { type: Date, default: Date.now },
 	dateUpdated : { type: Date, default: Date.now },
 	documentDate: { type: Date, default: Date.now },
+	defaultSortField 			: { type:String, enum:['name', 'date', ''], default:'' },
+	defaultSortDirection 	: { type:String, enum:['asc', 'desc', ''], default:'' },
 
 	updatedBy 	: { type:'ObjectId', ref:'User', default:null },
 	order 		: { type: Number, default: 0},
