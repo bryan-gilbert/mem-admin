@@ -52,6 +52,12 @@
 				</ul>
 			</span>
 		</div>
+    <div ng-if="doc._schemaName === 'Folder'" class="form-group">
+      <label class="control-label">Default Sort Order</label>
+      <input type="radio" name="defaultSort" value="date" ng-model="doc.defaultSortField" ng-click="setDefaultSortOrder('date')"/> By Date (most recent first)<br>
+      <input type="radio" name="defaultSort" value="name" ng-model="doc.defaultSortField" ng-click="setDefaultSortOrder('name')"/> By Name (descending)<br>
+      <!--<input type="radio" name="defaultSort" value="" ng-model="doc.defaultSortField" ng-click="setDefaultSortOrder()"/> Default (use global setting)<br>-->
+    </div>
 
 		<div class="row form-group">
 			<div class="col-sm-12">

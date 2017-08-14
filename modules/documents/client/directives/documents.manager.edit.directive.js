@@ -33,6 +33,11 @@ angular.module('documents')
 								showWeeks: false
 							};
 
+							$scope.setDefaultSortOrder = function(value) {
+								$scope.doc.defaultSortField = value ? value : '';
+								$scope.doc.defaultSortDirection = value ? 'desc' : '';
+							};
+
 							$scope.originalName = obj.displayName;
 							$scope.doc = obj;
 							if ($scope.doc._schemaName === "Document") {

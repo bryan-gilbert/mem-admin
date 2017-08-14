@@ -335,6 +335,13 @@ angular.module('documents')
 								return _.extend(n,{selected: (_.find(self.checkedDirs, function(d) { return d.model.id === n.model.id; }) !== undefined), type: 'Directory'});
 							});
 
+							if (self.currentNode.model && self.currentNode.model.folderObj) {
+								var sortField = self.currentNode.model.folderObj.defaultSortField || 'date';
+								var sortDirection = self.currentNode.model.folderObj.defaultSortDirection || 'desc';
+								self.sorting.column = sortField;
+								self.sorting.ascending = sortDirection === 'asc';
+							}
+
 							self.applySort();
 							// since we loaded this, make it the selected node
 							self.selectedNode = self.currentNode;
