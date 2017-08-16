@@ -1,12 +1,54 @@
 
-<div class="modal-header">
+
+  <!--<div class="file-browser">-->
+    <div class="fb-header">
+    <div class="fb-header-path">
+    <div class="fb-path"
+         ng-class="{'root': node.model.name == 'ROOT'}"
+         ng-repeat="node in vmm.currentPath">
+      <span class="fb-path-arrow" ng-if="node.model.name != 'ROOT'">&rsaquo;</span>
+      <button class="btn icon-btn" ng-click="documentMgr.selectNode(node.model.id)">
+        <i class="glyphicon glyphicon glyphicon-home" ng-if="node.model.name == 'ROOT'"></i>
+        <span class="btn-txt" ng-if="node.model.name != 'ROOT'">{{ node.model.folderObj.displayName }}</span>
+      </button>
+    </div>
+  </div>
+    </div>
+
+  <div class="proto-control">
+    <input type="radio" name="side" value="sideA" ng-model="vmm.protoSide" ng-click="vmm.protoSide = 'sideA'"/> Side A
+    <input type="radio" name="side" value="sideB" ng-model="vmm.protoSide" ng-click="vmm.protoSide = 'sideB'"/> Side B
+{{vmm.protoSide}}
+  </div>
+  <!--</div>-->
+
+  <div class="modal-header sort-options-header" ng-class="{'prototype-header' : vmm.protoSide === 'sideA'}">
     <button class="btn btn-default close" ng-click="vmm.cancel()"><span aria-hidden="true">×</span></button>
-    <h3 class="modal-title">Select and drag files to re-order</h3>
+    <h3 class="modal-title">Default Sort Order {{vmm.folderName}}</h3>
+  <div class="sort-options-controls">
+    <input type="radio" name="defaultSort" value="date-desc" ng-model="vmm.defaultSortField" ng-click="vmm.setDefaultSortOrder('date-desc')"/> By Date Descending
+    <input type="radio" name="defaultSort" value="date-asc" ng-model="vmm.defaultSortField" ng-click="vmm.setDefaultSortOrder('date-asc')"/> By Date Ascending
+    <br>
+    <input type="radio" name="defaultSort" value="name-desc" ng-model="vmm.defaultSortField" ng-click="vmm.setDefaultSortOrder('name-desc')"/> By Name Descending
+    <input type="radio" name="defaultSort" value="name-asc" ng-model="vmm.defaultSortField" ng-click="vmm.setDefaultSortOrder('name-asc')"/> By Name Ascending
+    <br>
+    <input type="radio" name="defaultSort" value="custom" ng-model="vmm.defaultSortField" ng-click="vmm.setDefaultSortOrder('custom')"/> Custom (drag and drop order below)
+  </div>
+
+  <h4>Folders</h4>
+</div>
+<div class="modal-body">
+
+    <x-reorder-collection-content class="dnd-sort-list" x-list="vmm.folders" x-disable-dragging="vmm.defaultSortField"></x-reorder-collection-content>
 </div>
 
-<div class="modal-body">
-    <x-reorder-collection-content class="dnd-sort-list" x-list="vmm.list"></x-reorder-collection-content>
+<div class="modal-header" ng-class="{'prototype-header' : vmm.protoSide === 'sideA'}">
+  <h4>Documents</h4>
 </div>
+<div class="modal-body">
+  <x-reorder-collection-content class="dnd-sort-list" x-list="vmm.documents"></x-reorder-collection-content>
+</div>
+
 
 <div class="modal-footer">
     <button class="btn btn-default" ng-click="vmm.cancel()">Cancel</button>

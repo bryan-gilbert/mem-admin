@@ -13,6 +13,14 @@
 			</div>
 		</div>
 		<div class="fb-header-actions">
+
+      <button class="btn icon-btn" title="Custom Sort"
+              ng-if="project.userCan.manageFolders"
+              x-reorder-collection-modal x-collection="documentMgr.prototype" x-on-save="otherDocsReordered"
+              x-project="project"
+              x-current-path="documentMgr.currentPath"
+      ><span class="glyphicon glyphicon-sort"></span></button>
+
 			<button class="btn icon-btn" title="Add New Folder"
 					ng-if="project.userCan.manageFolders"
 					ng-disabled="!documentMgr.selectedNode"

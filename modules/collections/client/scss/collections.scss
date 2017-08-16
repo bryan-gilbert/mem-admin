@@ -152,6 +152,18 @@ $dnd-drag-target-height: 2.5rem;
     }
 }
 
+.proto-control {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+.prototype-header {
+    background-color: #eee;
+}
+
+.sort-options-header {
+
+}
 .dnd-sort-list {
     @include flexbox();
     @include flexdirection(column);
@@ -163,13 +175,13 @@ $dnd-drag-target-height: 2.5rem;
 
     [class^="dnd-drag-target"] {
         height: $dnd-drag-target-height;
-        background: #ddd;
+        background: #eee;
         //opacity: 0.5;
     }
 
     .dnd-drag-target-top {
         @include flex(0 0 auto);
-        background: #eee;
+       // background: #eee;
         //margin-bottom: calc( #{$dnd-drag-target-height} * -1);
     }
 
@@ -186,7 +198,7 @@ $dnd-drag-target-height: 2.5rem;
     }
 
     .dnd-row {
-        padding: 2rem;
+        padding: 1rem;
         border-bottom: 1px solid #eee;
 
         &.selected {

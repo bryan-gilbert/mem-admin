@@ -77,6 +77,9 @@ angular.module('documents')
 
 				self.currentFiles = [];
 				self.currentDirs = [];
+				self.prototype = {
+						otherDocuments: []
+				};
 
 				self.batchMenuEnabled = false;
 
@@ -334,6 +337,9 @@ angular.module('documents')
 							self.currentDirs = _.map(self.currentNode.children, function (n) {
 								return _.extend(n,{selected: (_.find(self.checkedDirs, function(d) { return d.model.id === n.model.id; }) !== undefined), type: 'Directory'});
 							});
+
+							self.prototype.documents = self.currentFiles;
+							self.prototype.folders = self.currentDirs;
 
 							if (self.currentNode.model && self.currentNode.model.folderObj) {
 								var sortField = self.currentNode.model.folderObj.defaultSortField || 'date';

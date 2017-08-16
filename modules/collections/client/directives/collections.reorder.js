@@ -1,7 +1,7 @@
 "use strict";
 angular.module('control')
 // x-reorder-collection-modal attribute of a button
-.directive("reorderCollectionModal",['$modal', '_', 'CollectionModel', 'AlertService', reorderCollectionModal])
+.directive("reorderCollectionModal",['$modal', '_', 'CollectionModel', 'AlertService', 'moment', reorderCollectionModal])
 // x-reorder-collection-content element in the modal
 .directive('reorderCollectionContent', [reorderCollectionContent ])
 // dnd-scroll-area a region above and below the reordering list that helps scrolling the list
@@ -9,11 +9,13 @@ angular.module('control')
 .controller("collectionsSortingController", collectionsSortingController)
 ;
 
-function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
+function reorderCollectionModal($modal, _, CollectionModel, AlertService, moment) {
 	return {
 		restrict: 'A',
 		scope: {
 			collection: '=',
+			project: '=',
+			currentPath: '=',
 			onSave: '='
 		},
 		link: function (scope, element, attributes) {
@@ -25,40 +27,128 @@ function reorderCollectionModal($modal, _, CollectionModel, AlertService) {
 					size: 'lg',
 					windowClass: 'fs-modal',
 					controller: function ($modalInstance) {
-						var vmm = this;
-						vmm.busy = false;
-						vmm.ok = submit;
-						vmm.cancel = cancel;
-						vmm.collection = scope.collection;
-						//deep'ish copy of original list of documents. We can sort this clone without affecting the original
-						vmm.list = JSON.parse(JSON.stringify(vmm.collection.otherDocuments));
-						// sort the list by sort order
-						vmm.list.sort(function (doc1, doc2) {
-							return doc1.sortOrder - doc2.sortOrder;
+						var self = this;
+						self.busy = false;
+						self.ok = submit;
+						self.cancel = cancel;
+						self.currentPath = scope.currentPath;
+						self.collection = scope.collection;
+						self.defaultSortField = 'custom';
+						self.sorting={};
+						self.protoSide = 'sideB';
+
+						self.setDefaultSortOrder = function(value) {
+							console.log('sort order', value);
+							self.defaultSortField = value ? value : '';
+							switch(self.defaultSortField) {
+								case 'date-asc':
+									self.sorting.column = 'date';
+									self.sorting.ascending = true;
+									break;
+								case 'date-desc':
+									self.sorting.column = 'date';
+									self.sorting.ascending = false;
+									break;
+								case 'name-asc':
+									self.sorting.column = 'name';
+									self.sorting.ascending = true;
+									break;
+								case 'name-desc':
+									self.sorting.column = 'name';
+									self.sorting.ascending = false;
+									break;
+								case 'custom':
+									self.sorting.column = 'custom';
+									break;
+							}
+							self.applySort();
+						};
+						//deep'ish copy of original list of documents. We can sort this without affecting the original
+						self.documents = [];
+						self.folders = [];
+						_.forEach(self.collection.documents, function(doc) {
+							var elem = {
+								document: {}
+							};
+							var d = elem.document;
+							d.displayName = doc.displayName;
+							d.documentDate = doc.documentDate;
+							d.isPublished = doc.isPublished;
+							self.documents.push(elem);
 						});
+						_.forEach(self.collection.folders, function(doc) {
+							var elem = {
+								document: {}
+							};
+							var d = elem.document;
+							d.displayName = doc.model.name;
+							d.sortOrder = doc.model.order;
+							d.isPublished = doc.model.published;
+							self.folders.push(elem);
+						});
+
+						self.applySort = function() {
+							var direction = self.sorting.ascending ? 1 : -1;
+							var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+							if (self.sorting.column === 'name') {
+								self.documents.sort(function (d1, d2) {
+									var v = collator.compare(d1.document.displayName, d2.document.displayName);
+									return v * direction;
+								});
+								self.folders.sort(function (d1, d2) {
+									var v = collator.compare(d1.document.displayName, d2.document.displayName);
+									return v * direction;
+								});
+							} else if (self.sorting.column === 'date') {
+								self.documents.sort(function(a, b){
+									var doc1 = a.document;
+									var doc2 = b.document;
+									/*
+									 Sort by date but account for the case the display value is like June 2017.  We want to group all
+									 June 2017 docs before any like 2017-01-01.
+									 */
+									var d1 = doc1.documentDate ? {d: moment(doc1.documentDate), my: doc1.documentDateDisplayMnYr} : undefined;
+									var d2 = doc2.documentDate ? {d: moment(doc2.documentDate), my: doc2.documentDateDisplayMnYr} : undefined;
+									if (d1 && d2 && d1.d.isSame(d2.d,'month')) {
+										if (d1.my && d2.my) {
+											return (d1.d.valueOf() - d2.d.valueOf()) * direction;
+										} else if (d1.my) {
+											return -1 * direction;
+										}  else if (d2.my) {
+											return 1 * direction;
+										}
+									}
+									d1 = d1 ? d1.d.valueOf() : 0;
+									d2 = d2 ? d2.d.valueOf() : 0;
+									return (d1 - d2) * direction;
+								});
+							}
+
+							//scope.$apply();
+						};
 
 						function cancel () {
 							$modalInstance.dismiss('cancel');
 						}
 						function submit () {
-							vmm.busy = true;
-							var list = vmm.list;
+							self.busy = true;
+							var list = self.list;
 							var ids = [];
 							list.forEach(function(item) {
 								ids.push(item._id);
 							});
-							CollectionModel.sortOtherDocuments(vmm.collection._id, ids)
+							CollectionModel.sortOtherDocuments(self.collection._id, ids)
 							.then(function(sortedDocs) {
-								AlertService.success('"'+ vmm.collection.displayName +'"' + ' was reordered successfully.');
+								AlertService.success('"'+ self.collection.displayName +'"' + ' was reordered successfully.');
 								if (sortedDocs) {
-									vmm.collection.otherDocuments = sortedDocs;
+									self.collection.otherDocuments = sortedDocs;
 								}
 								$modalInstance.close(sortedDocs);
 							})
 							.catch(function(res) {
 								console.log("Error:", res);
 								var failure = _.has(res, 'message') ? res.message : undefined;
-								AlertService.error('"'+ vmm.collection.displayName +'"' + ' was not reordered');
+								AlertService.error('"'+ self.collection.displayName +'"' + ' was not reordered');
 								$modalInstance.close();
 							});
 						}
@@ -86,7 +176,8 @@ function reorderCollectionContent() {
 		controller: 'collectionsSortingController',
 		controllerAs: 'vm',
 		scope: {
-			list: '='
+			list: '=',
+			disableDragging: '='
 		}
 	};
 	return directive;
@@ -96,43 +187,46 @@ function reorderCollectionContent() {
 collectionsSortingController.$inject = ['$scope', '$document', '$timeout'];
 /* @ngInject */
 function collectionsSortingController($scope, $document, $timeout) {
-	var vm = this;
-	vm.dragging = false;
-	vm.list = $scope.list;
-	vm.getSelectedItemsIncluding = getSelectedItemsIncluding;
-	vm.onDragstart = onDragstart;
-	vm.onDragend = onDragend;
-	vm.onDrop = onDrop;
-	vm.onMoved = onMoved;
-	vm.sorting = {ascending: true, column: ''};
+	var self = this;
+	self.dragging = false;
+	self.list = $scope.list;
+	self.getSelectedItemsIncluding = getSelectedItemsIncluding;
+	self.onDragstart = onDragstart;
+	self.onDragend = onDragend;
+	self.onDrop = onDrop;
+	self.onMoved = onMoved;
+	self.disableDragging = $scope.disableDragging;
+	self.sorting = {ascending: true, column: ''};
 
-	vm.list.forEach(function(item) {
+	self.list.forEach(function(item) {
 		item.selected = false;
 	});
 
 	function getSelectedItemsIncluding(item) {
 		item.selected = true;
-		return vm.list.filter(function(item) {
+		return self.list.filter(function(item) {
 			return item.selected;
 		});
 	}
 
 	function onDragstart(event, idPrefix) {
-		vm.dragging = true;
+		self.dragging = true;
+		console.log("dstart")
+		return false;
 	}
 
 	function onDragend() {
-		vm.dragging = false;
+		self.dragging = false;
 	}
 
 	function onDrop(items, index) {
 		angular.forEach(items, function(item) {
 			item.selected = false;
 		});
-		vm.list = vm.list.slice(0, index)
+		self.list = self.list.slice(0, index)
 		.concat(items)
-		.concat(vm.list.slice(index));
-		vm.list.forEach(function(item,index) {
+		.concat(self.list.slice(index));
+		self.list.forEach(function(item,index) {
 			item.sortOrder = index;
 		});
 		return true;
@@ -140,10 +234,10 @@ function collectionsSortingController($scope, $document, $timeout) {
 
 	function onMoved() {
 		// remove the items that were just dragged (they are still selected)
-		vm.list = vm.list.filter(function(item) {
+		self.list = self.list.filter(function(item) {
 			return !item.selected;
 		});
-		$scope.list = vm.list;
+		$scope.list = self.list;
 	}
 }
 
