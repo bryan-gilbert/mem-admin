@@ -313,6 +313,9 @@ function CategoriesFactory(TreeModel, _) {
 				}, {
 					id: createId(),
 					name: 'Management Plan'
+				},  {
+					id: createId(),
+					name: 'Monitoring Report'
 				}, {
 					id: createId(),
 					name: 'Application Document'
