@@ -1,0 +1,72 @@
+
+<!-- breadcrumb -->
+<div class="modal-header fb-header doc-sort-header">
+  <h3 class="modal-title">Default Sort Order {{vmm.folderName}}</h3>
+<!--<div class="fb-header">-->
+  <div class="fb-header-path">
+    <div class="fb-path"
+        ng-class="{'root': node.model.name == 'ROOT'}"
+        ng-repeat="node in vmm.currentPath">
+      <span class="fb-path-arrow" ng-if="node.model.name != 'ROOT'">&rsaquo;</span>
+      <span class="">
+        <i class="glyphicon glyphicon glyphicon-home" ng-if="node.model.name == 'ROOT'"></i>
+        <button disabled class="btn-txt sort-options-breadcrumb" ng-if="node.model.name != 'ROOT'">{{ node.model.folderObj.displayName }}</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-header sort-options-header">
+  <button class="btn btn-default close" ng-click="vmm.cancel()"><span aria-hidden="true">×</span></button>
+  <div class="sort-options-controls">
+    <div class="sort-options-group">
+      <div class="sort-options-row-layout">
+        <input type="radio" name="defaultSort" value="name-asc"  ng-model="vmm.defaultSortColumn" ng-click="vmm.setDefaultSortOrder('name-asc')"/>
+        <label>Name ascending</label>
+        <input type="radio" name="defaultSort" value="date-desc" ng-model="vmm.defaultSortColumn" ng-click="vmm.setDefaultSortOrder('date-desc')"/>
+        <label>Date descending</label>
+      </div>
+      <div class="sort-options-row-layout">
+        <input type="radio" name="defaultSort" value="name-desc" ng-model="vmm.defaultSortColumn" ng-click="vmm.setDefaultSortOrder('name-desc')"/>
+        <label>Name descending</label>
+        <input type="radio" name="defaultSort" value="date-asc"  ng-model="vmm.defaultSortColumn" ng-click="vmm.setDefaultSortOrder('date-asc')"/>
+        <label>Date ascending</label>
+      </div>
+    </div>
+    <div class="sort-options-group">
+      <div class="sort-options-row-layout">
+        <input type="checkbox" ng-model="vmm.applyToChildren" ng-disabled="vmm.customSorting"/>
+        <label ng-class="{'disabled' : vmm.customSorting}">Apply {{vmm.sortDescription}} to all subfolders</label>
+      </div>
+    </div>
+    <div class="sort-options-group">
+      <div class="sort-options-row-layout" >
+        <input type="radio" name="defaultSort" value="custom" ng-model="vmm.defaultSortColumn" ng-click="vmm.setDefaultSortOrder('custom')"/>
+        <label>Custom (drag and drop order below)</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-body">
+  <x-reorder-documents-content class="dnd-sort-list"
+    x-key     = "'sortFolders'"
+    x-list    = "vmm.folders"
+    x-parent  = "vmm"
+    x-title   = "'Folders'">
+  </x-reorder-documents-content>
+</div>
+<div class="modal-body">
+  <x-reorder-documents-content class="dnd-sort-list"
+    x-key     = "'sortDocuments'"
+    x-list    = "vmm.documents"
+    x-parent  = "vmm"
+    x-title   = "'Documents'">
+  </x-reorder-documents-content>
+</div>
+
+
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="vmm.cancel()">Cancel</button>
+  <button class="btn btn-primary" ng-click="vmm.ok()">Save</button>
+</div>

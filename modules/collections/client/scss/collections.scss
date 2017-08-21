@@ -164,12 +164,13 @@ $dnd-drag-target-height: 2.5rem;
     [class^="dnd-drag-target"] {
         height: $dnd-drag-target-height;
         background: #ddd;
+        padding: 0.5rem 0 0.5rem 2rem;
         //opacity: 0.5;
     }
 
     .dnd-drag-target-top {
         @include flex(0 0 auto);
-        background: #eee;
+        //background: #eee;
         //margin-bottom: calc( #{$dnd-drag-target-height} * -1);
     }
 
@@ -177,6 +178,7 @@ $dnd-drag-target-height: 2.5rem;
         @include flex(1 1 auto);
         overflow-y: auto;
         background: #fff;
+        border-bottom: 1px solid #aaa;
 
         ul {
             margin: 0;
@@ -186,9 +188,9 @@ $dnd-drag-target-height: 2.5rem;
     }
 
     .dnd-row {
-        padding: 2rem;
+        padding: 1.5rem 2rem 1.5rem 2rem;
         border-bottom: 1px solid #eee;
-
+        @include userselect(none);
         &.selected {
             color: $dnd-selected-color;
             border-bottom: $dnd-selected-border;
@@ -223,4 +225,58 @@ $dnd-drag-target-height: 2.5rem;
     //height: 2rem;
     background: #5091cd !important;
     opacity: 0.5;
+}
+
+.sort-options-controls {
+    display: flex;
+    flex-direction: row;
+}
+.sort-options-group {
+    flex: 1 0 20%;
+}
+.sort-options-row-layout {
+    display: flex;
+}
+
+.sort-options-row-layout label {
+    flex: 0 1 30rem; // fixed width spacing
+    margin-top: 0.7rem; // to vertically line up with input
+    margin-bottom: 0; // to tighten up the display
+}
+.sort-options-row-layout input {
+    flex: 0 1 1rem; // 1rem to size radio
+    margin-right: 1rem; // to space radio button and label
+}
+
+.doc-sort-header {
+    display: flex;
+}
+
+.doc-sort-header .fb-header-path {
+    margin-top: 0.5rem;
+}
+
+.doc-sort-header h3 {
+    flex: 0 1 auto;
+    margin-right: 2rem;
+}
+
+.doc-sort-header div {
+    flex: 1 0 auto;
+    display: flex;
+}
+
+.doc-sort-header .fb-path-arrow {
+    margin: -1.1rem 1rem !important;
+}
+
+.sort-options-breadcrumb {
+    border: none;
+    background-color: inherit;
+}
+
+.sort-options-header {
+    .disabled {
+        opacity: 0.2;
+    }
 }

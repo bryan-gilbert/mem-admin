@@ -77,6 +77,7 @@ angular.module('documents')
 
 				self.currentFiles = [];
 				self.currentDirs = [];
+				self.customSorter = {};
 
 				self.batchMenuEnabled = false;
 
@@ -176,6 +177,18 @@ angular.module('documents')
 							var d1 = doc1.isPublished ? 1 : 0;
 							var d2 = doc2.isPublished ? 1 : 0;
 							return (d1 - d2) * direction;
+						});
+					} else if (self.sorting.column === 'custom') {
+						console.log("Custom sorting this folder");
+						self.currentFiles.sort(function(doc1, doc2){
+							return (doc1.order - doc2.order);
+						});
+						self.currentDirs.sort(function(doc1, doc2){
+							var f1 = doc1.model.folderObj, f2 = doc2.model.folderObj;
+							if (f1 && f2) {
+								return (f1.order - f2.order);
+							}
+							return 0;
 						});
 					}
 				};
@@ -342,9 +355,13 @@ angular.module('documents')
 								self.sorting.ascending = sortDirection === 'asc';
 							}
 
-							self.applySort();
 							// since we loaded this, make it the selected node
 							self.selectedNode = self.currentNode;
+
+							// update the custom sorted ready for it to be opened
+							self.customSorter.documents = self.currentFiles;
+							self.customSorter.folders = self.currentDirs;
+							self.customSorter.sorting = self.sorting;
 
 							// see what is currently checked
 							self.syncCheckedItems();
@@ -358,7 +375,7 @@ angular.module('documents')
 						// Go through each of the currently available folders in view, and attach the object
 						// to the model dynamically so that the permissions directive will work by using the
 						// correct x-object=folderObject instead of a doc.
-						FolderModel.lookupForProjectIn($scope.project._id, self.currentNode.model.id)
+						return FolderModel.lookupForProjectIn($scope.project._id, self.currentNode.model.id)
 						.then(function (folder) {
 							_.each(folder, function (fs) {
 								// We do breadth-first because we like to talk to our neighbours before moving
@@ -372,7 +389,17 @@ angular.module('documents')
 							});
 							$scope.$apply();
 						});
+					})
+					.then(function() {
+						// everything is ready.  In particular the directoryStructure models have the most current folderObj
+						// so we can perform custom sort if needed.
+						self.applySort();
 					});
+				};
+
+				self.defaultSortOrderChanged = function() {
+					// console.log("need to refresh docs and folders to get them sorted");
+					self.selectNode(self.currentNode.model.id);
 				};
 
 				self.syncCheckedItems = function(doc) {

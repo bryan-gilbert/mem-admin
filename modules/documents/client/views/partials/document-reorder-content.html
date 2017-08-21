@@ -1,0 +1,32 @@
+<div class="dnd-drag-target-top">
+  {{vm.sectionTitle}}
+</div>
+<div class="dnd-scroll-container" id="{{'dnd-' + vm._id}}">
+    <ul dnd-list
+        dnd-allowed-types="vm.list.allowedTypes"
+        dnd-drop="vm.onDrop(item, index)">
+        <li class="dnd-row"
+            ng-repeat       = "item in vm.list.items"
+            id              = "{{'dc0-' + item._id}}"
+            ng-class        = "{'selected': item.selected}"
+            dnd-draggable   = "vm.getSelectedItemsIncluding(item)"
+            dnd-type        = "item.type"
+            dnd-dragstart   = "vm.onDragstart( event, 'dc0-')"
+            dnd-moved       = "vm.onMoved()"
+            dnd-dragend     = "vm.onDragend(event)"
+            dnd-selected    = "vm.onSelect(item)"
+            dnd-disable-if  = "!vm.parent.customSorting"
+            ng-hide         = "vm.dragging && item.selected">
+            <div class="collection-document">
+                <div class="name">{{ item.displayName }}</div>
+                <div class="date">{{ item.documentDate | documentDateFilter: item.documentDateDisplayMnYr }}</div>
+                <div class="status">
+                    <span class="label label-default"
+                          ng-class="{'label-success' : item.isPublished }">{{ item.isPublished ? 'PUBLISHED' : 'UNPUBLISHED' }}
+                    </span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+

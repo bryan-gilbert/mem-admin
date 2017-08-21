@@ -33,5 +33,9 @@
 }
 
 @mixin userselect($values) {
-    user-select: $values;
+	-webkit-touch-callout: $values;
+	-webkit-user-select: $values;
+	-moz-user-select: $values;
+	-ms-user-select: $values;
+	user-select: $values;
 }

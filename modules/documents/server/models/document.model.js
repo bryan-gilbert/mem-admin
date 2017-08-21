@@ -147,8 +147,8 @@ module.exports = genSchema ('Document', {
 	internalEncoding        : { type:String, default:'' },
 	//TODO for MEM all old data is empty
 	oldData                 : { type:String, default:'' },
-	//TODO for MEM all order fields contain 0
-	order                   : { type: Number, default: 0}, // this will be used to sort supporting documents in artifacts, the order will be arbitrary and determined by the user.
+
+	order                   : { type: Number, default: Date.now},
 	// TODO for MEM all eaoStatus are empty
 	eaoStatus               : { type:String, default:'', enum:['', 'Unvetted', 'Rejected', 'Deferred', 'Accepted', 'Published', 'Spam'] },// for use with Public Comment Attachments...
 

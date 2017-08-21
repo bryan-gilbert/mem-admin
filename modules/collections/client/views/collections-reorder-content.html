@@ -3,11 +3,11 @@
 <div class="dnd-scroll-container" id="collectionList">
     <ul dnd-list dnd-drop="vm.onDrop(item, index)">
         <li class="dnd-row" ng-repeat="item in vm.list" id="{{'dc0-' + item.document._id}}" ng-class="{'selected': item.selected}"
-            dnd-draggable="vm.getSelectedItemsIncluding(item)" 
-            dnd-dragstart="vm.onDragstart( event, 'dc0-')" 
+            dnd-draggable="vm.getSelectedItemsIncluding(item)"
+            dnd-dragstart="vm.onDragstart( event, 'dc0-')"
             dnd-moved="vm.onMoved()"
-            dnd-dragend="vm.onDragend(event)" 
-            dnd-selected="item.selected = !item.selected" 
+            dnd-dragend="vm.onDragend(event)"
+            dnd-selected="item.selected = !item.selected"
             ng-hide="vm.dragging && item.selected">
             <div class="collection-document">
                 <div class="name">{{ item.document.displayName }}</div>
