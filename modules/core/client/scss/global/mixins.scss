@@ -1,4 +1,13 @@
 
+// Mixins
+@mixin clearfix() {
+    &::after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+}
+
 @mixin flexbox() {
 	display: -webkit-box;
 	display: -ms-flexbox;

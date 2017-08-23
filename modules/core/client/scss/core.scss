@@ -3670,8 +3670,11 @@ tmpl-template-render {
 
 // COMPONENTS
 @import "modules/core/client/scss/components/accordion.scss";
+@import "modules/core/client/scss/components/buttons.scss";
+@import "modules/core/client/scss/components/drag-and-drop.scss";
 @import "modules/core/client/scss/components/file-browser.scss";
 @import "modules/core/client/scss/components/misc.scss";
+@import "modules/core/client/scss/components/modal.scss";
 @import "modules/core/client/scss/components/panel.scss";
 @import "modules/core/client/scss/components/pdf-viewer.scss";
 @import "modules/core/client/scss/components/spinner.scss";
@@ -3680,6 +3683,7 @@ tmpl-template-render {
 
 // MODULES
 @import "modules/collections/client/scss/collections.scss";
+@import "modules/documents/client/scss/document-manager.scss";
 @import "modules/project-conditions/client/scss/project-conditions.scss";
 @import "modules/projects/client/scss/project-timeline.scss";
 @import "modules/projects/client/scss/projects-abstract.scss";

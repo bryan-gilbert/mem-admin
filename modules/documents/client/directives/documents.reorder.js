@@ -34,7 +34,7 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 					templateUrl:   'modules/documents/client/views/partials/modal-document-reorder.html',
 					controllerAs:  'vmm',
 					size:          'lg',
-					windowClass:   'fs-modal',
+					windowClass:   'doc-sort-order-modal fs-modal',
 					controller: function ($modalInstance) {
 						var self                  = this;
 						self.busy                 = false;
@@ -313,7 +313,7 @@ function documentsSortingController($scope, $document, $timeout) {
 		}
 	}
 	function onDragstart(event, idPrefix) {
-		self.dragging = true;
+		self.dragging = true;	
 		return false;
 	}
 
