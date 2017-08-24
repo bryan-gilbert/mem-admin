@@ -25,6 +25,14 @@ ul[dnd-list] {
     .dndDraggingSource {
         display: none;
     }
+
+    &.dndDragover {
+        .dnd-row {
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
 }
 
 .dnd-row {
@@ -68,17 +76,7 @@ ul[dnd-list] {
     }
 
     &[draggable = true] {
-        &:hover {
-            color: $dnd-selected-color;
-            border-bottom: $dnd-selected-border;
-            background-color: $dnd-selected-bg;
-
-            .dnd-row-inner {
-                .dnd-handle {
-                    border-right: $dnd-selected-border;
-                }
-            }
-        }
+        cursor: move;
 
         .dnd-handle {
             @include flex(0 1 5rem);
@@ -92,4 +90,9 @@ ul[dnd-list] {
     color: $dnd-selected-color;
     border-bottom: 1px solid $dnd-selected-bg;
     background: $dnd-selected-bg !important;
+    font-weight: bold;
+
+    .glyphicon {
+        margin-right: 1rem;
+    }
 }

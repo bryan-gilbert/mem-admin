@@ -40,7 +40,7 @@
 }
 
 .doc-sort-scroll-container {
-    @include flex(1 1 auto);
+    @include flex(1 1 1px);
     position: relative;
     overflow-y: scroll;
     background: #fff;
