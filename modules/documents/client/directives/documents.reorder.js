@@ -17,6 +17,7 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 		ASC          = 'asc',
 		DESC         = 'desc',
 		TITLE        = "Please confirm",
+		WARNING      = "Warning",
 		CONFIRM_CUST = "If you have made any custom sorting changes they will be lost.",
 		CONFIRM_APP  = "Are you sure you want to apply the %option% sorting to all subfolders?";
 	return {
@@ -42,14 +43,15 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 						self.cancel               = cancel;
 						self.setDefaultSortOrder  = setDefaultSortOrder;
 						self.applySort            = applySort;
+						self.checkSelectItem      = checkSelectItem;
 						self.onSaveCallback       = scope.onSave;
 						self.currentPath          = scope.currentPath;
 						self.options              = scope.options;
 						self.folder               = scope.folder;
 						self.sorting              = {};
 						self.applyToChildren      = false;
-						self.documents            = {allowedTypes: [DOCUMENT], items: []};
-						self.folders              = {allowedTypes: [FOLDER], items: []};
+						self.documents            = { id: DOCUMENT, allowedTypes: [DOCUMENT], items: []};
+						self.folders              = { id: FOLDER, allowedTypes: [FOLDER], items: []};
 
 						//deep'ish copy of original list of documents. We can sort this without affecting the original
 						_.forEach(self.options.documents, function(doc) {
@@ -119,9 +121,15 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 							}
 							if (self.sorting.column === CUSTOM && column !== CUSTOM) {
 								ConfirmService.confirmDialog({
-									titleText: TITLE,
+									titleText: WARNING,
 									confirmText: CONFIRM_CUST,
 									onOk: function () {
+										_.forEach(self.folders.items, function (item) {
+											item.selected = false;
+										});
+										_.forEach(self.documents.items, function (item) {
+											item.selected = false;
+										});
 										self.applySort(sortKey, column, defaultSortDirection);
 										return Promise.resolve();
 									},
@@ -136,6 +144,35 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 							}
 						}
 
+						function checkSelectItem (listHolder, item) {
+							if (self.customSorting) {
+								var listId = listHolder.id;
+								var theOtherListHolder = listId === FOLDER ? self.documents : self.folders;
+								var list = listHolder.items;
+								if (item.selected === false) {
+									// user wants to select this item
+									if (theOtherListHolder.isActive) {
+										_.forEach(theOtherListHolder.items, function (other) {
+											other.selected = false;
+										});
+										theOtherListHolder.isActive = false;
+									}
+									item.selected = true;
+									listHolder.isActive = true;
+								} else {
+									// user wants to unselect this item. But now that one item is unselected
+									// do we need to deactivate the list?
+									item.selected = false;
+									var found = _.find(list, function (a) {
+										return a.selected;
+									});
+									if (!found) {
+										listHolder.isActive = false;
+									}
+								}
+							}
+						}
+
 						function applySort(sortKey, column, defaultSortDirection) {
 							self.sorting.sortKey              = sortKey;
 							self.defaultSortColumn            = sortKey;
@@ -147,7 +184,7 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 								self.applyToChildren = false;
 
 							} else {
-								self.sortDescription = NAME + ' ' + (defaultSortDirection === ASC ? ASCENDING : DESCENDING);
+								self.sortDescription = self.sorting.column + ' ' + (defaultSortDirection === ASC ? ASCENDING : DESCENDING);
 								self.customSorting   = false;
 							}
 							var direction = self.sorting.defaultSortDirection === ASC ? 1 : -1;
@@ -270,7 +307,6 @@ function reorderDocumentsContent() {
 		scope: {
 			list:   '=',
 			title:  '=',
-			key:    '=',
 			parent: '='
 		}
 	};
@@ -282,7 +318,6 @@ documentsSortingController.$inject = ['$scope', '$document', '$timeout'];
 /* @ngInject */
 function documentsSortingController($scope, $document, $timeout) {
 	var self                       = this;
-	self._id                       = $scope.key;
 	self.dragging                  = false;
 	self.list                      = $scope.list;
 	self.parent                    = $scope.parent;
@@ -308,10 +343,10 @@ function documentsSortingController($scope, $document, $timeout) {
 	}
 
 	function onSelect(item) {
-		if (self.parent.customSorting) {
-			item.selected = !item.selected;
-		}
+		self.parent.checkSelectItem(self.list, item);
+		return true;
 	}
+
 	function onDragstart(event, idPrefix) {
 		self.dragging = true;	
 		return false;

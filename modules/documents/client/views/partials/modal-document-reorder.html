@@ -1,6 +1,6 @@
 <div class="modal-header">
 	<button class="btn btn-default close" ng-click="vmm.cancel()"><span aria-hidden="true">×</span></button>
-	<h3 class="modal-title">Set Default Sort Order</h3>
+	<h3 class="modal-title">Set Default Sort Order > {{vmm.folder.displayName}}</h3>
 </div>
 
 <div class="modal-body">
@@ -42,7 +42,7 @@
 		<div class="btn-group" ng-if="!vmm.customSorting">
 			<div class="checkbox">
 				<label>
-					<input type="checkbox" id="applyToChildren" ng-model="vmm.applyToChildren" /> Apply to all subfolders
+					<input type="checkbox" id="applyToChildren" ng-model="vmm.applyToChildren" /> Apply {{vmm.sortDescription}} to all subfolders
 				</label>
 			</div>
 		</div>
@@ -57,17 +57,16 @@
 	</div>
 
 	<div class="doc-sort-scroll-container">
-		<x-reorder-documents-content class="dnd-sort-list doc-sort-folders" 
-			x-key="'sortFolders'" 
-			x-list="vmm.folders" 
-			x-parent="vmm" 
+		<x-reorder-documents-content class="dnd-sort-list doc-sort-folders"
+      ng-class="{'active' : vmm.folders.isActive}"
+			x-list="vmm.folders"
+			x-parent="vmm"
 			x-title="'Folders'">
 		</x-reorder-documents-content>
 
-		<x-reorder-documents-content class="dnd-sort-list doc-sort-files" 
-			x-key="'sortDocuments'" 
-			x-list="vmm.documents" 
-			x-parent="vmm" 
+		<x-reorder-documents-content class="dnd-sort-list doc-sort-files"
+			x-list="vmm.documents"
+			x-parent="vmm"
 			x-title="'Documents'">
 		</x-reorder-documents-content>
 
