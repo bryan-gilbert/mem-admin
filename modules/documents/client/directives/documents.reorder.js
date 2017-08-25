@@ -35,6 +35,8 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 					templateUrl:   'modules/documents/client/views/partials/modal-document-reorder.html',
 					controllerAs:  'vmm',
 					size:          'lg',
+					backdrop:      'static',
+					keyboard:      false,
 					windowClass:   'doc-sort-order-modal fs-modal',
 					controller: function ($modalInstance) {
 						var self                  = this;
@@ -225,8 +227,23 @@ function reorderDocumentsModal($modal, $timeout, _,  AlertService, ConfirmServic
 							},0);
 						}
 
-						function cancel () {
-							$modalInstance.dismiss('cancel');
+						function cancel (event) {
+							console.log("cancel ", event)
+							if (self.customSorting) {
+								ConfirmService.confirmDialog({
+									titleText: WARNING,
+									confirmText: CONFIRM_CUST,
+									onOk: function () {
+										$modalInstance.dismiss('cancel');
+										return Promise.resolve();
+									},
+									onCancel: function () {
+										return Promise.resolve();
+									}
+								});
+							} else {
+								$modalInstance.dismiss('cancel');
+							}
 						}
 
 						function submit () {
